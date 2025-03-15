@@ -43,7 +43,7 @@ public class File implements RequestHandler {
         InputStream inputStream = request.getInputStream();
         Map<String, String> headers = request.getHeaders();
 
-        String contentLengthHeader = headers.get("Content-Length");
+        String contentLengthHeader = headers.get(CONTENT_LENGTH);
         if (contentLengthHeader == null) {
             String response = "HTTP/1.1 400 Bad Request\r\n\r\n";
             outputStream.write(response.getBytes());
