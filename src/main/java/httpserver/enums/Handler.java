@@ -3,7 +3,8 @@ package httpserver.enums;
 public enum Handler {
 
     ROOT("/"),
-    ECHO("/echo/");
+    ECHO("/echo/"),
+    USER_AGENT("/user-agent");
 
 
     private final String value;

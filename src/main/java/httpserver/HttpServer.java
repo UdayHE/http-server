@@ -56,7 +56,7 @@ public class HttpServer {
             String[] requestParts = requestLine.split(SPACE);
             if (requestParts.length >= 2) {
                 String path = requestParts[1];
-                routeHandler.get(path).handle(path, outputStream);
+                routeHandler.get(path).handle(path, bufferedReader, outputStream);
             }
         }
     }
