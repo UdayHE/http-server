@@ -3,10 +3,7 @@ package httpserver;
 import httpserver.dto.Request;
 import httpserver.handler.RouteHandler;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
@@ -49,8 +46,9 @@ public class HttpServer {
 
     private void handleClient(Socket clientSocket, RouteHandler routeHandler) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-             OutputStream outputStream = clientSocket.getOutputStream()) {
-            handleRequest(routeHandler, reader, outputStream);
+             OutputStream outputStream = clientSocket.getOutputStream();
+             InputStream inputStream = clientSocket.getInputStream()) {
+            handleRequest(routeHandler, reader, outputStream, inputStream);
         } catch (IOException e) {
             log.log(Level.SEVERE, "Error handling client: {0}", e.getMessage());
         } finally {
@@ -62,7 +60,7 @@ public class HttpServer {
         }
     }
 
-    private void handleRequest(RouteHandler routeHandler, BufferedReader reader, OutputStream outputStream) throws IOException {
+    private void handleRequest(RouteHandler routeHandler, BufferedReader reader, OutputStream outputStream, InputStream inputStream) throws IOException {
         String requestLine = reader.readLine();
         log.log(Level.INFO, "Request: {0}", requestLine);
 
@@ -77,6 +75,7 @@ public class HttpServer {
                         .path(path)
                         .reader(reader)
                         .outputStream(outputStream)
+                        .inputStream(inputStream)
                         .headers(headers)
                         .build());
             }
