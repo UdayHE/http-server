@@ -7,8 +7,7 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static constant.Constant.ROOT;
-import static constant.Constant.SPACE;
+import static constant.Constant.*;
 
 public class Main {
 
@@ -33,14 +32,23 @@ public class Main {
 
                 if (requestLine != null && !requestLine.isBlank()) {
                     String[] requestParts = requestLine.split(SPACE);
-                    if (requestParts.length > 2) {
+                    if (requestParts.length >= 2) {
                         String path = requestParts[1];
-                        String response;
-                        if (ROOT.equals(path))
-                            response = "HTTP/1.1 200 OK\r\n\r\n";
-                        else
-                            response = "HTTP/1.1 404 Not Found\r\n\r\n";
-                        outputStream.write(response.getBytes());
+                        if (ROOT.equals(path)) {
+                            String response = "HTTP/1.1 200 OK\r\n\r\n";
+                            outputStream.write(response.getBytes());
+                        } else if (path.startsWith(ECHO)) {
+                            String echoString = path.substring(6);
+                            String response = "HTTP/1.1 200 OK\r\n" +
+                                    "Content-Type: text/plain\r\n" +
+                                    "Content-Length: " + echoString.length() + "\r\n\r\n" +
+                                    echoString;
+                            outputStream.write(response.getBytes());
+
+                        } else {
+                            String response = "HTTP/1.1 404 Not Found\r\n\r\n";
+                            outputStream.write(response.getBytes());
+                        }
                         outputStream.flush();
                     }
                 }
