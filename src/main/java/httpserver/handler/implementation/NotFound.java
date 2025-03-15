@@ -11,5 +11,6 @@ public class NotFound implements RequestHandler {
     public void handle(Request request) throws IOException {
         String response = "HTTP/1.1 404 Not Found\r\n\r\n";
         request.getOutputStream().write(response.getBytes());
+        request.getOutputStream().flush();
     }
 }

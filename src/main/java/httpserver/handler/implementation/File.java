@@ -47,6 +47,7 @@ public class File implements RequestHandler {
         if (contentLengthHeader == null) {
             String response = "HTTP/1.1 400 Bad Request\r\n\r\n";
             outputStream.write(response.getBytes());
+            outputStream.flush();
             return;
         }
 
@@ -63,6 +64,7 @@ public class File implements RequestHandler {
         if (totalBytesRead != contentLength) {
             String response = "HTTP/1.1 400 Bad Request\r\n\r\n";
             outputStream.write(response.getBytes());
+            outputStream.flush();
             return;
         }
 
@@ -72,12 +74,14 @@ public class File implements RequestHandler {
 
         String response = "HTTP/1.1 201 Created\r\n\r\n";
         outputStream.write(response.getBytes());
+        outputStream.flush();
     }
 
     private void processGetRequest(OutputStream outputStream, java.io.File file) throws IOException {
         if (!file.exists() || file.isDirectory()) {
             String response = "HTTP/1.1 404 Not Found\r\n\r\n";
             outputStream.write(response.getBytes());
+            outputStream.flush();
             return;
         }
 
@@ -91,5 +95,6 @@ public class File implements RequestHandler {
                 "Content-Length: " + fileContent.length + "\r\n\r\n";
         outputStream.write(response.getBytes());
         outputStream.write(fileContent);
+        outputStream.flush();
     }
 }
