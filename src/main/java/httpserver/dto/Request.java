@@ -1,23 +1,34 @@
 package httpserver.dto;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
 public class Request {
 
-    private String method;
-    private String path;
-    private BufferedReader reader;
-    private OutputStream outputStream;
-    private Map<String, String> headers;
+    private final String method;
+    private final String path;
+    private final BufferedReader reader;
+    private final OutputStream outputStream;
+    private InputStream inputStream;
+    private final Map<String, String> headers;
 
     private Request(Builder builder) {
         this.method = builder.method;
         this.path = builder.path;
         this.reader = builder.reader;
+        this.inputStream = builder.inputStream;
         this.outputStream = builder.outputStream;
         this.headers = builder.headers;
+    }
+
+    public InputStream getInputStream() {
+        return inputStream;
+    }
+
+    public void setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
     }
 
     public String getMethod() {
@@ -45,6 +56,7 @@ public class Request {
         private String path;
         private BufferedReader reader;
         private OutputStream outputStream;
+        private InputStream inputStream;
         private Map<String, String> headers;
 
         public Builder method(String method) {
@@ -64,6 +76,11 @@ public class Request {
 
         public Builder outputStream(OutputStream outputStream) {
             this.outputStream = outputStream;
+            return this;
+        }
+
+        public Builder inputStream(InputStream inputStream) {
+            this.inputStream = inputStream;
             return this;
         }
 

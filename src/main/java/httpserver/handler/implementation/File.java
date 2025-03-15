@@ -8,7 +8,6 @@ import java.io.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
-import static httpserver.constant.Constant.COLON;
 import static httpserver.constant.Constant.CONTENT_LENGTH;
 
 public class File implements RequestHandler {
@@ -23,7 +22,6 @@ public class File implements RequestHandler {
     public void handle(Request request) throws IOException {
         String method = request.getMethod();
         String path = request.getPath();
-        BufferedReader reader = request.getReader();
         OutputStream outputStream = request.getOutputStream();
 
         String filename = path.substring(7);
@@ -33,19 +31,17 @@ public class File implements RequestHandler {
         if (method.equals(HttpMethod.GET.name())) {
             processGetRequest(outputStream, file);
         } else if (method.equals(HttpMethod.POST.name())) {
-            processPostRequest(reader, outputStream, file);
+            processPostRequest(request, file);
         }
     }
 
-    private void processPostRequest(BufferedReader reader, OutputStream outputStream, java.io.File file) throws IOException {
-        String contentLengthHeader = null;
-        String line;
-        while ((line = reader.readLine()) != null && !line.isEmpty()) {
-            if (line.startsWith(CONTENT_LENGTH)) {
-                contentLengthHeader = line.split(COLON)[1];
-            }
-        }
+    private void processPostRequest(Request request,
+                                    java.io.File file) throws IOException {
 
+        OutputStream outputStream = request.getOutputStream();
+        InputStream inputStream = request.getInputStream();
+
+        String contentLengthHeader = request.getHeaders().get(CONTENT_LENGTH);
         if (contentLengthHeader == null) {
             String response = "HTTP/1.1 400 Bad Request\r\n\r\n";
             outputStream.write(response.getBytes());
@@ -53,11 +49,17 @@ public class File implements RequestHandler {
         }
 
         int contentLength = Integer.parseInt(contentLengthHeader);
-        char[] body = new char[contentLength];
-        reader.read(body, 0, contentLength);
+        byte[] body = new byte[contentLength];
+        int bytesRead = inputStream.read(body, 0, contentLength);
 
-        try (FileWriter writer = new FileWriter(String.valueOf(file))) {
-            writer.write(body);
+        if (bytesRead != contentLength) {
+            String response = "HTTP/1.1 400 Bad Request\r\n\r\n";
+            outputStream.write(response.getBytes());
+            return;
+        }
+
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(body);
         }
 
         String response = "HTTP/1.1 201 Created\r\n\r\n";
