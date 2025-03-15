@@ -13,6 +13,16 @@ public class UserAgent implements RequestHandler {
 
     @Override
     public void handle(String path, BufferedReader reader, OutputStream outputStream) throws IOException {
+        String userAgent = getUserAgent(reader);
+
+        String response = "HTTP/1.1 200 OK\r\n" +
+                "Content-Type: text/plain\r\n" +
+                "Content-Length: " + userAgent.length() + "\r\n\r\n" +
+                userAgent;
+        outputStream.write(response.getBytes());
+    }
+
+    private String getUserAgent(BufferedReader reader) throws IOException {
         String userAgent = EMPTY;
         String line;
         while ((line = reader.readLine()) != null && !line.isEmpty()) {
@@ -21,11 +31,6 @@ public class UserAgent implements RequestHandler {
                 break;
             }
         }
-
-        String response = "HTTP/1.1 200 OK\r\n" +
-                "Content-Type: text/plain\r\n" +
-                "Content-Length: " + userAgent.length() + "\r\n\r\n" +
-                userAgent;
-        outputStream.write(response.getBytes());
+        return userAgent;
     }
 }
