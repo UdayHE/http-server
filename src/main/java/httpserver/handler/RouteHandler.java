@@ -29,6 +29,8 @@ public class RouteHandler {
             handler = handlers.get(ECHO.getValue());
         else if (path.equals(USER_AGENT.getValue()))
             handler = handlers.get(USER_AGENT.getValue());
+        else if (path.startsWith(FILE.getValue()))
+            handler = handlers.get(FILE.getValue());
         return handler != null ? handler : notFoundHandler;
     }
 
