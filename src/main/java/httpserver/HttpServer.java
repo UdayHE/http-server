@@ -47,7 +47,7 @@ public class HttpServer {
         }
     }
 
-    private static void processRequest(BufferedReader bufferedReader,
+    private void processRequest(BufferedReader bufferedReader,
                                        OutputStream outputStream) throws IOException {
         String requestLine = bufferedReader.readLine();
         log.log(Level.INFO, "Request:{0}", requestLine);
