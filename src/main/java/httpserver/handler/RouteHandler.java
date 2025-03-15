@@ -1,14 +1,14 @@
-package handler;
+package httpserver.handler;
 
-import handler.implementation.Echo;
-import handler.implementation.NotFound;
-import handler.implementation.Root;
+import httpserver.handler.implementation.Echo;
+import httpserver.handler.implementation.NotFound;
+import httpserver.handler.implementation.Root;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static enums.Handler.ECHO;
-import static enums.Handler.ROOT;
+import static httpserver.enums.Handler.ECHO;
+import static httpserver.enums.Handler.ROOT;
 
 public class RouteHandler {
 

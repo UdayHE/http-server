@@ -1,4 +1,4 @@
-package enums;
+package httpserver.enums;
 
 public enum Handler {
 

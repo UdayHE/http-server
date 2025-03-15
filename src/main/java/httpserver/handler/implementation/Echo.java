@@ -1,6 +1,6 @@
-package handler.implementation;
+package httpserver.handler.implementation;
 
-import handler.RequestHandler;
+import httpserver.handler.RequestHandler;
 
 import java.io.IOException;
 import java.io.OutputStream;
