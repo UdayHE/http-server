@@ -9,5 +9,6 @@ public class Constant {
     public static final String USER_AGENT = "User-Agent:";
 
     public static final int PORT = 4221;
+    public static final int THREAD_POOL_SIZE = 10;
 
 }

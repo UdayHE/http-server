@@ -13,8 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static httpserver.constant.Constant.PORT;
-import static httpserver.constant.Constant.SPACE;
+import static httpserver.constant.Constant.*;
 
 public class HttpServer {
 
@@ -33,7 +32,7 @@ public class HttpServer {
         try {
             ServerSocket serverSocket = new ServerSocket(PORT);
             serverSocket.setReuseAddress(true);
-            ExecutorService executorService = Executors.newFixedThreadPool(10);
+            ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
             RouteHandler routeHandler = new RouteHandler();
             while (true) {
                 Socket clientSocket = serverSocket.accept();
@@ -45,7 +44,7 @@ public class HttpServer {
         }
     }
 
-    private static void handleClient(Socket clientSocket, RouteHandler routeHandler) {
+    private void handleClient(Socket clientSocket, RouteHandler routeHandler) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
              OutputStream outputStream = clientSocket.getOutputStream()) {
 
