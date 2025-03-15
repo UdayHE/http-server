@@ -27,13 +27,13 @@ public class HttpServer {
         return INSTANCE;
     }
 
-    public void start() {
+    public void start(String[] args) {
         log.info("HTTP Server Started.");
         try {
             ServerSocket serverSocket = new ServerSocket(PORT);
             serverSocket.setReuseAddress(true);
             ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
-            RouteHandler routeHandler = new RouteHandler();
+            RouteHandler routeHandler = new RouteHandler(args);
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 log.info("Accepted connection");

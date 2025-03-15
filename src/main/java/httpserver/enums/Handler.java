@@ -4,7 +4,8 @@ public enum Handler {
 
     ROOT("/"),
     ECHO("/echo/"),
-    USER_AGENT("/user-agent");
+    USER_AGENT("/user-agent"),
+    FILE("/files/");
 
 
     private final String value;
