@@ -1,11 +1,15 @@
 package httpserver.handler.implementation;
 
+import httpserver.dto.Request;
 import httpserver.enums.HttpMethod;
 import httpserver.handler.RequestHandler;
 
 import java.io.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+
+import static httpserver.constant.Constant.COLON;
+import static httpserver.constant.Constant.CONTENT_LENGTH;
 
 public class File implements RequestHandler {
 
@@ -16,7 +20,12 @@ public class File implements RequestHandler {
     }
 
     @Override
-    public void handle(String method, String path, BufferedReader reader, OutputStream outputStream) throws IOException {
+    public void handle(Request request) throws IOException {
+        String method = request.getMethod();
+        String path = request.getPath();
+        BufferedReader reader = request.getReader();
+        OutputStream outputStream = request.getOutputStream();
+
         String filename = path.substring(7);
         filename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
         java.io.File file = new java.io.File(directory, filename);
@@ -32,8 +41,8 @@ public class File implements RequestHandler {
         String contentLengthHeader = null;
         String line;
         while ((line = reader.readLine()) != null && !line.isEmpty()) {
-            if (line.startsWith("Content-Length:")) {
-                contentLengthHeader = line.split(": ")[1];
+            if (line.startsWith(CONTENT_LENGTH)) {
+                contentLengthHeader = line.split(COLON)[1];
             }
         }
 

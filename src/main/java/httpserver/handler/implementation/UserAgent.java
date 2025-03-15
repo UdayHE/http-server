@@ -1,5 +1,6 @@
 package httpserver.handler.implementation;
 
+import httpserver.dto.Request;
 import httpserver.handler.RequestHandler;
 
 import java.io.BufferedReader;
@@ -12,7 +13,10 @@ import static httpserver.constant.Constant.USER_AGENT;
 public class UserAgent implements RequestHandler {
 
     @Override
-    public void handle(String method, String path, BufferedReader reader, OutputStream outputStream) throws IOException {
+    public void handle(Request request) throws IOException {
+        BufferedReader reader = request.getReader();
+        OutputStream outputStream = request.getOutputStream();
+
         String userAgent = getUserAgent(reader);
 
         String response = "HTTP/1.1 200 OK\r\n" +

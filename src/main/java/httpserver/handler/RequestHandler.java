@@ -1,10 +1,10 @@
 package httpserver.handler;
 
-import java.io.BufferedReader;
+import httpserver.dto.Request;
+
 import java.io.IOException;
-import java.io.OutputStream;
 
 public interface RequestHandler {
 
-    void handle(String method, String path, BufferedReader reader, OutputStream outputStream) throws IOException;
+    void handle(Request request) throws IOException;
 }

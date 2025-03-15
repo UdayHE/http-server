@@ -1,5 +1,6 @@
 package httpserver;
 
+import httpserver.dto.Request;
 import httpserver.handler.RouteHandler;
 
 import java.io.BufferedReader;
@@ -8,6 +9,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -47,18 +50,7 @@ public class HttpServer {
     private void handleClient(Socket clientSocket, RouteHandler routeHandler) {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
              OutputStream outputStream = clientSocket.getOutputStream()) {
-
-            String requestLine = reader.readLine();
-            log.log(Level.INFO, "Request: {0}", requestLine);
-
-            if (requestLine != null) {
-                String[] requestParts = requestLine.split(SPACE);
-                if (requestParts.length >= 3) {
-                    String method = requestParts[0];
-                    String path = requestParts[1];
-                    routeHandler.get(path).handle(method, path, reader, outputStream);
-                }
-            }
+            handleRequest(routeHandler, reader, outputStream);
         } catch (IOException e) {
             log.log(Level.SEVERE, "Error handling client: {0}", e.getMessage());
         } finally {
@@ -69,4 +61,37 @@ public class HttpServer {
             }
         }
     }
+
+    private void handleRequest(RouteHandler routeHandler, BufferedReader reader, OutputStream outputStream) throws IOException {
+        String requestLine = reader.readLine();
+        log.log(Level.INFO, "Request: {0}", requestLine);
+
+        if (requestLine != null) {
+            String[] requestParts = requestLine.split(SPACE);
+            if (requestParts.length >= 3) {
+                String method = requestParts[0];
+                String path = requestParts[1];
+                Map<String, String> headers = getHeaders(reader);
+                routeHandler.get(path).handle(new Request.Builder()
+                        .method(method)
+                        .path(path)
+                        .reader(reader)
+                        .outputStream(outputStream)
+                        .headers(headers)
+                        .build());
+            }
+        }
+    }
+
+    private Map<String, String> getHeaders(BufferedReader reader) throws IOException {
+        Map<String, String> headers = new HashMap<>();
+        String line;
+        while ((line = reader.readLine()) != null && !line.isEmpty()) {
+            String[] headerParts = line.split(COLON, 2);
+            if (headerParts.length == 2)
+                headers.put(headerParts[0], headerParts[1]);
+        }
+        return headers;
+    }
+
 }
