@@ -24,6 +24,7 @@ public class UserAgent implements RequestHandler {
                 "Content-Length: " + userAgent.length() + "\r\n\r\n" +
                 userAgent;
         outputStream.write(response.getBytes());
+        outputStream.flush();
     }
 
     private String getUserAgent(BufferedReader reader) throws IOException {

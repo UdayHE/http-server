@@ -38,5 +38,6 @@ public class Echo implements RequestHandler {
 
         outputStream.write(response.getBytes());
         outputStream.write(responseBody);
+        outputStream.flush();
     }
 }
