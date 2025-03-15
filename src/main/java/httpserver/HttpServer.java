@@ -53,9 +53,10 @@ public class HttpServer {
 
             if (requestLine != null) {
                 String[] requestParts = requestLine.split(SPACE);
-                if (requestParts.length >= 2) {
+                if (requestParts.length >= 3) {
+                    String method = requestParts[0];
                     String path = requestParts[1];
-                    routeHandler.get(path).handle(path, reader, outputStream);
+                    routeHandler.get(path).handle(method, path, reader, outputStream);
                 }
             }
         } catch (IOException e) {

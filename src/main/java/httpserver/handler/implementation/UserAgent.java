@@ -12,7 +12,7 @@ import static httpserver.constant.Constant.USER_AGENT;
 public class UserAgent implements RequestHandler {
 
     @Override
-    public void handle(String path, BufferedReader reader, OutputStream outputStream) throws IOException {
+    public void handle(String method, String path, BufferedReader reader, OutputStream outputStream) throws IOException {
         String userAgent = getUserAgent(reader);
 
         String response = "HTTP/1.1 200 OK\r\n" +

@@ -6,5 +6,5 @@ import java.io.OutputStream;
 
 public interface RequestHandler {
 
-    void handle(String path, BufferedReader reader, OutputStream outputStream) throws IOException;
+    void handle(String method, String path, BufferedReader reader, OutputStream outputStream) throws IOException;
 }

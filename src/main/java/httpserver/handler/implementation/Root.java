@@ -9,7 +9,7 @@ import java.io.OutputStream;
 public class Root implements RequestHandler {
 
     @Override
-    public void handle(String path, BufferedReader reader, OutputStream outputStream) throws IOException {
+    public void handle(String method, String path, BufferedReader reader, OutputStream outputStream) throws IOException {
         String response = "HTTP/1.1 200 OK\r\n\r\n";
         outputStream.write(response.getBytes());
     }
