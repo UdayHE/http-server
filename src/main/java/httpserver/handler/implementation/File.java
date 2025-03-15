@@ -7,6 +7,7 @@ import httpserver.handler.RequestHandler;
 import java.io.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import static httpserver.constant.Constant.CONTENT_LENGTH;
 
@@ -40,8 +41,9 @@ public class File implements RequestHandler {
 
         OutputStream outputStream = request.getOutputStream();
         InputStream inputStream = request.getInputStream();
+        Map<String, String> headers = request.getHeaders();
 
-        String contentLengthHeader = request.getHeaders().get(CONTENT_LENGTH);
+        String contentLengthHeader = headers.get("Content-Length");
         if (contentLengthHeader == null) {
             String response = "HTTP/1.1 400 Bad Request\r\n\r\n";
             outputStream.write(response.getBytes());
@@ -50,9 +52,15 @@ public class File implements RequestHandler {
 
         int contentLength = Integer.parseInt(contentLengthHeader);
         byte[] body = new byte[contentLength];
-        int bytesRead = inputStream.read(body, 0, contentLength);
+        int totalBytesRead = 0;
 
-        if (bytesRead != contentLength) {
+        while (totalBytesRead < contentLength) {
+            int bytesRead = inputStream.read(body, totalBytesRead, contentLength - totalBytesRead);
+            if (bytesRead == -1) break; // Stop if no more data
+            totalBytesRead += bytesRead;
+        }
+
+        if (totalBytesRead != contentLength) {
             String response = "HTTP/1.1 400 Bad Request\r\n\r\n";
             outputStream.write(response.getBytes());
             return;

@@ -11,7 +11,7 @@ public class Request {
     private final String path;
     private final BufferedReader reader;
     private final OutputStream outputStream;
-    private InputStream inputStream;
+    private final InputStream inputStream;
     private final Map<String, String> headers;
 
     private Request(Builder builder) {
@@ -25,10 +25,6 @@ public class Request {
 
     public InputStream getInputStream() {
         return inputStream;
-    }
-
-    public void setInputStream(InputStream inputStream) {
-        this.inputStream = inputStream;
     }
 
     public String getMethod() {
