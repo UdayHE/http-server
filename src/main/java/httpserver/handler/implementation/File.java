@@ -7,6 +7,7 @@ import httpserver.handler.RequestHandler;
 import java.io.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Map;
 
 import static httpserver.constant.Constant.CONTENT_LENGTH;
@@ -64,10 +65,7 @@ public class File implements RequestHandler {
             return;
         }
 
-        try (FileOutputStream fos = new FileOutputStream(file)) {
-            fos.write(body);
-        }
-
+        Files.write(file.toPath(), body);
         sendResponse(outputStream, "HTTP/1.1 201 Created\r\n\r\n");
     }
 
@@ -77,11 +75,7 @@ public class File implements RequestHandler {
             return;
         }
 
-        byte[] fileContent = new byte[(int) file.length()];
-        try (FileInputStream fis = new FileInputStream(file)) {
-            fis.read(fileContent);
-        }
-
+        byte[] fileContent = Files.readAllBytes(file.toPath());
         String responseHeaders = "HTTP/1.1 200 OK\r\n" +
                 "Content-Type: application/octet-stream\r\n" +
                 "Content-Length: " + fileContent.length + "\r\n\r\n";
