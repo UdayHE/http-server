@@ -103,18 +103,6 @@ public class HttpServer {
         return null; // End of stream
     }
 
-//    private Map<String, String> getHeaders(PushbackInputStream inputStream) throws IOException {
-//        Map<String, String> headers = new HashMap<>();
-//        String line;
-//        while (!(line = readLine(inputStream)).isEmpty()) {
-//            String[] headerParts = line.split(COLON, 2);
-//            if (headerParts.length == 2) {
-//                headers.put(headerParts[0].trim(), headerParts[1].trim());
-//            }
-//        }
-//        return headers;
-//    }
-
     private Map<String, String> getHeaders(PushbackInputStream inputStream) throws IOException {
         Map<String, String> headers = new HashMap<>();
         String line;
