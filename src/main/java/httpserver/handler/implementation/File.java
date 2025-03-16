@@ -65,6 +65,7 @@ public class File implements RequestHandler {
             return;
         }
 
+        Files.createDirectories(file.getParentFile().toPath()); // Add this line
         Files.write(file.toPath(), body);
         sendResponse(outputStream, "HTTP/1.1 201 Created\r\n\r\n");
     }
