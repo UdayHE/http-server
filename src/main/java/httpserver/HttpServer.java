@@ -6,6 +6,7 @@ import httpserver.handler.RouteHandler;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -50,8 +51,7 @@ public class HttpServer {
                 OutputStream outputStream = clientSocket.getOutputStream()
         ) {
             PushbackInputStream pushbackInput = new PushbackInputStream(rawInputStream, 8192);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(pushbackInput));
-            handleRequest(routeHandler, reader, outputStream, pushbackInput);
+            handleRequest(routeHandler, pushbackInput, outputStream);
         } catch (IOException e) {
             log.log(Level.SEVERE, "Error handling client: {0}", e.getMessage());
         } finally {
@@ -63,8 +63,9 @@ public class HttpServer {
         }
     }
 
-    private void handleRequest(RouteHandler routeHandler, BufferedReader reader, OutputStream outputStream, PushbackInputStream inputStream) throws IOException {
-        String requestLine = reader.readLine();
+    private void handleRequest(RouteHandler routeHandler, PushbackInputStream inputStream, OutputStream outputStream) throws IOException {
+        // Read request line manually
+        String requestLine = readLine(inputStream);
         if (requestLine == null) return;
 
         log.log(Level.INFO, "Request: {0}", requestLine);
@@ -73,23 +74,37 @@ public class HttpServer {
 
         String method = requestParts[0];
         String path = requestParts[1];
-        Map<String, String> headers = getHeaders(reader);
+        Map<String, String> headers = getHeaders(inputStream);
 
-        // Pass the PushbackInputStream, positioned after headers
         routeHandler.get(path).handle(new Request.Builder()
                 .method(method)
                 .path(path)
-                .reader(reader)
                 .outputStream(outputStream)
                 .inputStream(inputStream)
                 .headers(headers)
                 .build());
     }
 
-    private Map<String, String> getHeaders(BufferedReader reader) throws IOException {
+    private String readLine(PushbackInputStream inputStream) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        int prev = -1;
+        int curr;
+        while ((curr = inputStream.read()) != -1) {
+            if (prev == '\r' && curr == '\n') {
+                byte[] bytes = baos.toByteArray();
+                // Exclude \r\n from the line
+                return new String(bytes, 0, bytes.length - 1, StandardCharsets.UTF_8);
+            }
+            baos.write(curr);
+            prev = curr;
+        }
+        return null; // End of stream
+    }
+
+    private Map<String, String> getHeaders(PushbackInputStream inputStream) throws IOException {
         Map<String, String> headers = new HashMap<>();
         String line;
-        while ((line = reader.readLine()) != null && !line.isEmpty()) {
+        while (!(line = readLine(inputStream)).isEmpty()) {
             String[] headerParts = line.split(COLON, 2);
             if (headerParts.length == 2) {
                 headers.put(headerParts[0].trim(), headerParts[1].trim());
