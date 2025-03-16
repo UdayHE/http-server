@@ -62,7 +62,10 @@ public class HttpServer {
         }
     }
 
-    private void handleRequest(RouteHandler routeHandler, BufferedReader reader, OutputStream outputStream, InputStream inputStream) throws IOException {
+    private void handleRequest(RouteHandler routeHandler,
+                               BufferedReader reader,
+                               OutputStream outputStream,
+                               InputStream inputStream) throws IOException {
         String requestLine = reader.readLine();
         if (requestLine == null) return;
 
@@ -74,7 +77,6 @@ public class HttpServer {
         String path = requestParts[1];
         Map<String, String> headers = getHeaders(reader);
 
-        // Pass the raw InputStream, which is positioned after headers
         routeHandler.get(path).handle(new Request.Builder()
                 .method(method)
                 .path(path)
@@ -90,9 +92,8 @@ public class HttpServer {
         String line;
         while ((line = reader.readLine()) != null && !line.isEmpty()) {
             String[] headerParts = line.split(COLON, 2);
-            if (headerParts.length == 2) {
+            if (headerParts.length == 2)
                 headers.put(headerParts[0].trim(), headerParts[1].trim());
-            }
         }
         return headers;
     }
