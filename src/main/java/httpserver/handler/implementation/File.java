@@ -31,7 +31,7 @@ public class File implements RequestHandler {
         String path = request.getPath();
         OutputStream outputStream = request.getOutputStream();
 
-        if (!path.startsWith(FILE.name()) || path.length() <= 7) {
+        if (!path.startsWith(FILE.name())) {
             sendResponse(outputStream, BAD_REQUEST);
             return;
         }
