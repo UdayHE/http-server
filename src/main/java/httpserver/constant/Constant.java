@@ -15,6 +15,6 @@ public class Constant {
     public static final String ACCEPT_ENCODING = "Accept-Encoding";
 
     public static final int PORT = 4221;
-    public static final int THREAD_POOL_SIZE = 10;
+    public static final int THREAD_POOL_SIZE = Runtime.getRuntime().availableProcessors() * 2;
 
 }
