@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static httpserver.constant.Constant.ARGS_DIRECTORY;
-import static httpserver.constant.Constant.DEFAULT_DIRECTORY;
+import static httpserver.constant.Constant.EMPTY;
 import static httpserver.enums.Handler.*;
 
 public class RouteHandler {
@@ -35,8 +35,7 @@ public class RouteHandler {
     }
 
     private String getDirectory(String[] args) {
-        //String directory = DEFAULT_DIRECTORY;
-        String directory = "";
+        String directory = EMPTY;
         if (args.length == 2 && ARGS_DIRECTORY.equals(args[0]))
             directory = args[1];
         return directory;

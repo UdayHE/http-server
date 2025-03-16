@@ -8,6 +8,9 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import static httpserver.constant.Constant.UNKNOWN;
+import static httpserver.constant.Constant.USER_AGENT;
+
 public class UserAgent implements RequestHandler {
 
     @Override
@@ -15,7 +18,7 @@ public class UserAgent implements RequestHandler {
         OutputStream outputStream = request.getOutputStream();
         Map<String, String> headers = request.getHeaders();
 
-        String userAgent = headers.getOrDefault("User-Agent", "Unknown");
+        String userAgent = headers.getOrDefault(USER_AGENT, UNKNOWN);
 
         String response = "HTTP/1.1 200 OK\r\n" +
                 "Content-Type: text/plain\r\n" +

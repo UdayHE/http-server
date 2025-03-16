@@ -88,16 +88,16 @@ public class HttpServer {
     }
 
     private String readLine(PushbackInputStream inputStream) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         int prev = -1;
         int curr;
         while ((curr = inputStream.read()) != -1) {
             if (prev == '\r' && curr == '\n') {
-                byte[] bytes = baos.toByteArray();
+                byte[] bytes = byteArrayOutputStream.toByteArray();
                 // Exclude \r\n from the line
                 return new String(bytes, 0, bytes.length - 1, StandardCharsets.UTF_8);
             }
-            baos.write(curr);
+            byteArrayOutputStream.write(curr);
             prev = curr;
         }
         return null; // End of stream

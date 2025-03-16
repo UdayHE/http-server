@@ -5,12 +5,13 @@ import httpserver.handler.RequestHandler;
 
 import java.io.IOException;
 
+import static httpserver.constant.Constant.OK;
+
 public class Root implements RequestHandler {
 
     @Override
     public void handle(Request request) throws IOException {
-        String response = "HTTP/1.1 200 OK\r\n\r\n";
-        request.getOutputStream().write(response.getBytes());
+        request.getOutputStream().write(OK.getBytes());
         request.getOutputStream().flush();
     }
 }

@@ -55,9 +55,9 @@ public class File implements RequestHandler {
         InputStream inputStream = request.getInputStream();
         Map<String, String> headers = request.getHeaders();
 
-        String contentLengthHeader = headers.get("Content-Length");
+        String contentLengthHeader = headers.get(CONTENT_LENGTH);
         if (contentLengthHeader == null) {
-            sendResponse(outputStream, "HTTP/1.1 400 Bad Request\r\n\r\n");
+            sendResponse(outputStream, BAD_REQUEST);
             return;
         }
 
@@ -72,12 +72,12 @@ public class File implements RequestHandler {
         }
 
         if (totalBytesRead != contentLength) {
-            sendResponse(outputStream, "HTTP/1.1 400 Bad Request\r\n\r\n");
+            sendResponse(outputStream, BAD_REQUEST);
             return;
         }
 
         Files.write(file.toPath(), body);
-        sendResponse(outputStream, "HTTP/1.1 201 Created\r\n\r\n");
+        sendResponse(outputStream, CREATED);
     }
 
     private void get(OutputStream outputStream, java.io.File file) throws IOException {

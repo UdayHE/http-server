@@ -5,12 +5,13 @@ import httpserver.handler.RequestHandler;
 
 import java.io.IOException;
 
+import static httpserver.constant.Constant.NOT_FOUND;
+
 public class NotFound implements RequestHandler {
 
     @Override
     public void handle(Request request) throws IOException {
-        String response = "HTTP/1.1 404 Not Found\r\n\r\n";
-        request.getOutputStream().write(response.getBytes());
+        request.getOutputStream().write(NOT_FOUND.getBytes());
         request.getOutputStream().flush();
     }
 }
