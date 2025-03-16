@@ -48,10 +48,11 @@ public class HttpServer {
     private void handleClient(Socket clientSocket, RouteHandler routeHandler) {
         try (
                 InputStream rawInputStream = clientSocket.getInputStream();
-                OutputStream outputStream = clientSocket.getOutputStream()
+                OutputStream outputStream = clientSocket.getOutputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(rawInputStream));
         ) {
             PushbackInputStream pushbackInput = new PushbackInputStream(rawInputStream, 8192);
-            handleRequest(routeHandler, pushbackInput, outputStream);
+            handleRequest(routeHandler, pushbackInput, outputStream, reader);
         } catch (IOException e) {
             log.log(Level.SEVERE, "Error handling client: {0}", e.getMessage());
         } finally {
@@ -63,7 +64,7 @@ public class HttpServer {
         }
     }
 
-    private void handleRequest(RouteHandler routeHandler, PushbackInputStream inputStream, OutputStream outputStream) throws IOException {
+    private void handleRequest(RouteHandler routeHandler, PushbackInputStream inputStream, OutputStream outputStream, BufferedReader reader) throws IOException {
         // Read request line manually
         String requestLine = readLine(inputStream);
         if (requestLine == null) return;
@@ -79,6 +80,7 @@ public class HttpServer {
         routeHandler.get(path).handle(new Request.Builder()
                 .method(method)
                 .path(path)
+                .reader(reader)
                 .outputStream(outputStream)
                 .inputStream(inputStream)
                 .headers(headers)
