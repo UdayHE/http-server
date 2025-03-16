@@ -14,14 +14,16 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import static httpserver.constant.Constant.CONTENT_LENGTH;
+import static httpserver.constant.Constant.EMPTY;
 import static httpserver.enums.Handler.FILE;
 
 public class File implements RequestHandler {
+
     private static final Logger LOGGER = Logger.getLogger(File.class.getName());
     private final String directory;
 
     public File(String directory) {
-        this.directory = directory != null ? directory : ""; // Ensure directory is never null
+        this.directory = directory != null ? directory : EMPTY;
     }
 
     @Override
