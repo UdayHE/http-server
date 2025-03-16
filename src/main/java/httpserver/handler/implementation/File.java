@@ -36,6 +36,7 @@ public class File implements RequestHandler {
             return;
         }
 
+
         String filename = path.substring(7);
         filename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
         java.io.File file = new java.io.File(directory, filename);
