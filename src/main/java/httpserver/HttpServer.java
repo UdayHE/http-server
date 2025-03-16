@@ -45,10 +45,12 @@ public class HttpServer {
     }
 
     private void handleClient(Socket clientSocket, RouteHandler routeHandler) {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-             OutputStream outputStream = clientSocket.getOutputStream();
-             InputStream inputStream = clientSocket.getInputStream()) {
-            handleRequest(routeHandler, reader, outputStream, inputStream);
+        try (
+                InputStream rawInputStream = clientSocket.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(rawInputStream));
+                OutputStream outputStream = clientSocket.getOutputStream()
+        ) {
+            handleRequest(routeHandler, reader, outputStream, rawInputStream);
         } catch (IOException e) {
             log.log(Level.SEVERE, "Error handling client: {0}", e.getMessage());
         } finally {
@@ -62,24 +64,25 @@ public class HttpServer {
 
     private void handleRequest(RouteHandler routeHandler, BufferedReader reader, OutputStream outputStream, InputStream inputStream) throws IOException {
         String requestLine = reader.readLine();
-        log.log(Level.INFO, "Request: {0}", requestLine);
+        if (requestLine == null) return;
 
-        if (requestLine != null) {
-            String[] requestParts = requestLine.split(SPACE);
-            if (requestParts.length >= 3) {
-                String method = requestParts[0];
-                String path = requestParts[1];
-                Map<String, String> headers = getHeaders(reader);
-                routeHandler.get(path).handle(new Request.Builder()
-                        .method(method)
-                        .path(path)
-                        .reader(reader)
-                        .outputStream(outputStream)
-                        .inputStream(inputStream)
-                        .headers(headers)
-                        .build());
-            }
-        }
+        log.log(Level.INFO, "Request: {0}", requestLine);
+        String[] requestParts = requestLine.split(SPACE);
+        if (requestParts.length < 3) return;
+
+        String method = requestParts[0];
+        String path = requestParts[1];
+        Map<String, String> headers = getHeaders(reader);
+
+        // Pass the raw InputStream, which is positioned after headers
+        routeHandler.get(path).handle(new Request.Builder()
+                .method(method)
+                .path(path)
+                .reader(reader)
+                .outputStream(outputStream)
+                .inputStream(inputStream)
+                .headers(headers)
+                .build());
     }
 
     private Map<String, String> getHeaders(BufferedReader reader) throws IOException {
@@ -87,10 +90,10 @@ public class HttpServer {
         String line;
         while ((line = reader.readLine()) != null && !line.isEmpty()) {
             String[] headerParts = line.split(COLON, 2);
-            if (headerParts.length == 2)
-                headers.put(headerParts[0], headerParts[1]);
+            if (headerParts.length == 2) {
+                headers.put(headerParts[0].trim(), headerParts[1].trim());
+            }
         }
         return headers;
     }
-
 }

@@ -18,7 +18,6 @@ import static httpserver.constant.Constant.EMPTY;
 import static httpserver.enums.Handler.FILE;
 
 public class File implements RequestHandler {
-
     private static final Logger LOGGER = Logger.getLogger(File.class.getName());
     private final String directory;
 
@@ -32,13 +31,12 @@ public class File implements RequestHandler {
         String path = request.getPath();
         OutputStream outputStream = request.getOutputStream();
 
-        // Validate path and extract filename safely
         if (!path.startsWith(FILE.name()) || path.length() <= 7) {
             sendResponse(outputStream, "HTTP/1.1 400 Bad Request\r\n\r\n");
             return;
         }
 
-        String filename = path.substring(7); // After "/files/"
+        String filename = path.substring(7);
         filename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
         java.io.File file = new java.io.File(directory, filename);
 
@@ -58,28 +56,47 @@ public class File implements RequestHandler {
 
         String contentLengthHeader = headers.get(CONTENT_LENGTH);
         if (contentLengthHeader == null) {
+            LOGGER.warning("Missing Content-Length header for POST request");
+            sendResponse(outputStream, "HTTP/1.1 411 Length Required\r\n\r\n");
+            return;
+        }
+
+        int contentLength;
+        try {
+            contentLength = Integer.parseInt(contentLengthHeader);
+            if (contentLength < 0) {
+                LOGGER.warning("Negative Content-Length: " + contentLength);
+                sendResponse(outputStream, "HTTP/1.1 400 Bad Request\r\n\r\n");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            LOGGER.warning("Invalid Content-Length: " + contentLengthHeader);
             sendResponse(outputStream, "HTTP/1.1 400 Bad Request\r\n\r\n");
             return;
         }
 
-        int contentLength = Integer.parseInt(contentLengthHeader);
+        // Read exactly contentLength bytes
         byte[] body = new byte[contentLength];
         int totalBytesRead = 0;
-
         while (totalBytesRead < contentLength) {
             int bytesRead = inputStream.read(body, totalBytesRead, contentLength - totalBytesRead);
-            if (bytesRead == -1) break;
+            if (bytesRead == -1) {
+                LOGGER.warning("Unexpected end of stream after " + totalBytesRead + " bytes");
+                sendResponse(outputStream, "HTTP/1.1 400 Bad Request\r\n\r\n");
+                return;
+            }
             totalBytesRead += bytesRead;
         }
 
-        if (totalBytesRead != contentLength) {
-            sendResponse(outputStream, "HTTP/1.1 400 Bad Request\r\n\r\n");
-            return;
+        try {
+            Files.createDirectories(file.getParentFile().toPath());
+            Files.write(file.toPath(), body);
+            LOGGER.info("File written: " + file.getAbsolutePath());
+            sendResponse(outputStream, "HTTP/1.1 201 Created\r\n\r\n");
+        } catch (IOException e) {
+            LOGGER.severe("Failed to write file: " + e.getMessage());
+            sendResponse(outputStream, "HTTP/1.1 500 Internal Server Error\r\n\r\n");
         }
-
-        Files.createDirectories(file.getParentFile().toPath());
-        Files.write(file.toPath(), body);
-        sendResponse(outputStream, "HTTP/1.1 201 Created\r\n\r\n");
     }
 
     private void processGetRequest(OutputStream outputStream, java.io.File file) throws IOException {
