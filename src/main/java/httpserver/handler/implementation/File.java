@@ -54,52 +54,30 @@ public class File implements RequestHandler {
         InputStream inputStream = request.getInputStream();
         Map<String, String> headers = request.getHeaders();
 
-        // Validate Content-Length header
         String contentLengthHeader = headers.get(CONTENT_LENGTH);
         if (contentLengthHeader == null) {
-            LOGGER.warning("Missing Content-Length header for POST request");
-            sendResponse(outputStream, "HTTP/1.1 411 Length Required\r\n\r\n");
-            return;
-        }
-
-        int contentLength;
-        try {
-            contentLength = Integer.parseInt(contentLengthHeader);
-            if (contentLength < 0) {
-                LOGGER.warning("Negative Content-Length: " + contentLength);
-                sendResponse(outputStream, "HTTP/1.1 400 Bad Request\r\n\r\n");
-                return;
-            }
-        } catch (NumberFormatException e) {
-            LOGGER.warning("Invalid Content-Length: " + contentLengthHeader);
             sendResponse(outputStream, "HTTP/1.1 400 Bad Request\r\n\r\n");
             return;
         }
 
-        // Read request body
+        int contentLength = Integer.parseInt(contentLengthHeader);
         byte[] body = new byte[contentLength];
         int totalBytesRead = 0;
 
         while (totalBytesRead < contentLength) {
             int bytesRead = inputStream.read(body, totalBytesRead, contentLength - totalBytesRead);
-            if (bytesRead == -1) {
-                LOGGER.warning("Unexpected end of input stream");
-                sendResponse(outputStream, "HTTP/1.1 400 Bad Request\r\n\r\n");
-                return;
-            }
+            if (bytesRead == -1) break;
             totalBytesRead += bytesRead;
         }
 
-        // Write file and respond
-        try {
-            Files.createDirectories(file.getParentFile().toPath());
-            Files.write(file.toPath(), body);
-            LOGGER.info("File written: " + file.getAbsolutePath());
-            sendResponse(outputStream, "HTTP/1.1 201 Created\r\n\r\n");
-        } catch (IOException e) {
-            LOGGER.severe("Failed to write file: " + e.getMessage());
-            sendResponse(outputStream, "HTTP/1.1 500 Internal Server Error\r\n\r\n");
+        if (totalBytesRead != contentLength) {
+            sendResponse(outputStream, "HTTP/1.1 400 Bad Request\r\n\r\n");
+            return;
         }
+
+        Files.createDirectories(file.getParentFile().toPath());
+        Files.write(file.toPath(), body);
+        sendResponse(outputStream, "HTTP/1.1 201 Created\r\n\r\n");
     }
 
     private void processGetRequest(OutputStream outputStream, java.io.File file) throws IOException {
