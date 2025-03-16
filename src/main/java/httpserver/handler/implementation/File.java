@@ -11,7 +11,6 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static httpserver.constant.Constant.*;
@@ -55,49 +54,29 @@ public class File implements RequestHandler {
         InputStream inputStream = request.getInputStream();
         Map<String, String> headers = request.getHeaders();
 
-        String contentLengthHeader = headers.get(CONTENT_LENGTH);
+        String contentLengthHeader = headers.get("Content-Length");
         if (contentLengthHeader == null) {
-            log.warning("Missing Content-Length header for POST request");
-            sendResponse(outputStream, LENGTH_REQUIRED);
+            sendResponse(outputStream, "HTTP/1.1 400 Bad Request\r\n\r\n");
             return;
         }
 
-        int contentLength;
-        try {
-            contentLength = Integer.parseInt(contentLengthHeader);
-            if (contentLength < 0) {
-                log.log(Level.WARNING, "Negative Content-Length: {0}", contentLength);
-                sendResponse(outputStream, BAD_REQUEST);
-                return;
-            }
-        } catch (NumberFormatException e) {
-            log.warning("Invalid Content-Length: " + contentLengthHeader);
-            sendResponse(outputStream, BAD_REQUEST);
-            return;
-        }
-
-        // Read exactly contentLength bytes
+        int contentLength = Integer.parseInt(contentLengthHeader);
         byte[] body = new byte[contentLength];
         int totalBytesRead = 0;
+
         while (totalBytesRead < contentLength) {
             int bytesRead = inputStream.read(body, totalBytesRead, contentLength - totalBytesRead);
-            if (bytesRead == -1) {
-                log.log(Level.WARNING, "Unexpected end of stream after {0} bytes", totalBytesRead);
-                sendResponse(outputStream, BAD_REQUEST);
-                return;
-            }
+            if (bytesRead == -1) break;
             totalBytesRead += bytesRead;
         }
 
-        try {
-            Files.createDirectories(file.getParentFile().toPath());
-            Files.write(file.toPath(), body);
-            log.info("File written: " + file.getAbsolutePath());
-            sendResponse(outputStream, CREATED);
-        } catch (IOException e) {
-            log.severe("Failed to write file: " + e.getMessage());
-            sendResponse(outputStream, INTERNAL_SERVER_ERROR);
+        if (totalBytesRead != contentLength) {
+            sendResponse(outputStream, "HTTP/1.1 400 Bad Request\r\n\r\n");
+            return;
         }
+
+        Files.write(file.toPath(), body);
+        sendResponse(outputStream, "HTTP/1.1 201 Created\r\n\r\n");
     }
 
     private void processGetRequest(OutputStream outputStream, java.io.File file) throws IOException {
@@ -113,7 +92,7 @@ public class File implements RequestHandler {
                     "Content-Type: application/octet-stream\r\n" +
                     "Content-Length: " + fileContent.length + "\r\n\r\n";
             outputStream.write(response.getBytes());
-            outputStream.write(fileContent);
+            outputStream.write(fileContent, 0, fileContent.length);
             outputStream.flush();
             log.info("File served: " + file.getAbsolutePath());
         } catch (IOException e) {

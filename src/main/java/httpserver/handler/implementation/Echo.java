@@ -34,7 +34,7 @@ public class Echo implements RequestHandler {
                 "Content-Length: " + responseBody.length + "\r\n\r\n";
 
         outputStream.write(responseHeaders.getBytes());
-        outputStream.write(responseBody);
+        outputStream.write(responseBody, 0, responseBody.length);
         outputStream.flush();
     }
 }
