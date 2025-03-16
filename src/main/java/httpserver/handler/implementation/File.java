@@ -31,7 +31,7 @@ public class File implements RequestHandler {
         String path = request.getPath();
         OutputStream outputStream = request.getOutputStream();
 
-        if (!path.startsWith(FILE.name()) || path.length() <= 7) {
+        if (!path.startsWith(FILE.getValue()) || path.length() <= 7) {
             sendResponse(outputStream, BAD_REQUEST);
             return;
         }
@@ -42,15 +42,15 @@ public class File implements RequestHandler {
         java.io.File file = new java.io.File(directory, filename);
 
         if (method.equals(HttpMethod.GET.name())) {
-            processGetRequest(outputStream, file);
+            get(outputStream, file);
         } else if (method.equals(HttpMethod.POST.name())) {
-            processPostRequest(request, file);
+            post(request, file);
         } else {
             sendResponse(outputStream, METHOD_NOT_ALLOWED);
         }
     }
 
-    private void processPostRequest(Request request, java.io.File file) throws IOException {
+    private void post(Request request, java.io.File file) throws IOException {
         OutputStream outputStream = request.getOutputStream();
         InputStream inputStream = request.getInputStream();
         Map<String, String> headers = request.getHeaders();
@@ -80,7 +80,7 @@ public class File implements RequestHandler {
         sendResponse(outputStream, "HTTP/1.1 201 Created\r\n\r\n");
     }
 
-    private void processGetRequest(OutputStream outputStream, java.io.File file) throws IOException {
+    private void get(OutputStream outputStream, java.io.File file) throws IOException {
         if (!file.exists() || file.isDirectory()) {
             log.info("File not found or is a directory: " + file.getAbsolutePath());
             sendResponse(outputStream, NOT_FOUND);
