@@ -9,9 +9,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class RequestResponseHelper {
 
-    private String[] args;
+    private final String[] args;
 
-    public RequestResponseHelper(String[] args){
+    public RequestResponseHelper(String[] args) {
         this.args = args;
     }
 
@@ -34,6 +34,12 @@ public class RequestResponseHelper {
                 "Content-Type: text/plain\r\n" +
                 "Content-Length: " + userAgent.length() + "\r\n\r\n" +
                 userAgent;
+    }
+
+    public String octateStreamOKResponse(byte[] fileContent) {
+        return "HTTP/1.1 200 OK\r\n" +
+                "Content-Type: application/octet-stream\r\n" +
+                "Content-Length: " + fileContent.length + "\r\n\r\n";
     }
 
     public void sendResponse(OutputStream outputStream, String response) throws IOException {

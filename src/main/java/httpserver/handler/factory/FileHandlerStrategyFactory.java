@@ -4,6 +4,7 @@ import httpserver.enums.HttpMethod;
 import httpserver.handler.FileHandlerStrategy;
 import httpserver.handler.implementation.strategy.Get;
 import httpserver.handler.implementation.strategy.Post;
+import httpserver.helper.RequestResponseHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,16 +14,22 @@ import static httpserver.enums.HttpMethod.POST;
 
 public class FileHandlerStrategyFactory {
 
-    private FileHandlerStrategyFactory() {}
+    private final RequestResponseHelper requestResponseHelper;
+    private final Map<HttpMethod, FileHandlerStrategy> strategies = new HashMap<>();
 
-    private static final Map<HttpMethod, FileHandlerStrategy> strategies = new HashMap<>();
-
-    static {
-        strategies.put(GET, new Get());
-        strategies.put(POST, new Post());
+    public FileHandlerStrategyFactory(RequestResponseHelper requestResponseHelper) {
+        this.requestResponseHelper = requestResponseHelper;
+        strategies.put(GET, new Get(requestResponseHelper));
+        strategies.put(POST, new Post(requestResponseHelper));
     }
 
-    public static FileHandlerStrategy getStrategy(HttpMethod method) {
-        return strategies.get(method);
+
+
+    static {
+
+    }
+
+    public FileHandlerStrategy getStrategy(HttpMethod method) {
+        return this.strategies.get(method);
     }
 }

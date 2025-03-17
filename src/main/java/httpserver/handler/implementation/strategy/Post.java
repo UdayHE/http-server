@@ -2,6 +2,7 @@ package httpserver.handler.implementation.strategy;
 
 import httpserver.dto.Request;
 import httpserver.handler.FileHandlerStrategy;
+import httpserver.helper.RequestResponseHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +14,12 @@ import static httpserver.constant.Constant.*;
 
 public class Post implements FileHandlerStrategy {
 
+    private final RequestResponseHelper requestResponseHelper;
+
+    public Post(RequestResponseHelper requestResponseHelper) {
+        this.requestResponseHelper = requestResponseHelper;
+    }
+
     @Override
     public void handle(Request request, java.io.File file) throws IOException {
         OutputStream outputStream = request.getOutputStream();
@@ -21,7 +28,7 @@ public class Post implements FileHandlerStrategy {
 
         String contentLengthHeader = headers.get(CONTENT_LENGTH);
         if (contentLengthHeader == null) {
-            sendResponse(outputStream, BAD_REQUEST);
+            requestResponseHelper.sendResponse(outputStream, BAD_REQUEST);
             return;
         }
 
@@ -36,16 +43,11 @@ public class Post implements FileHandlerStrategy {
         }
 
         if (totalBytesRead != contentLength) {
-            sendResponse(outputStream, BAD_REQUEST);
+            requestResponseHelper.sendResponse(outputStream, BAD_REQUEST);
             return;
         }
 
         Files.write(file.toPath(), body);
-        sendResponse(outputStream, CREATED);
-    }
-
-    private void sendResponse(OutputStream outputStream, String response) throws IOException {
-        outputStream.write(response.getBytes());
-        outputStream.flush();
+        requestResponseHelper.sendResponse(outputStream, CREATED);
     }
 }
