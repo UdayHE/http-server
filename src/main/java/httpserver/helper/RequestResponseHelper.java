@@ -3,9 +3,17 @@ package httpserver.helper;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import static httpserver.constant.Constant.ARGS_DIRECTORY;
+import static httpserver.constant.Constant.EMPTY;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class RequestResponseHelper {
+
+    private String[] args;
+
+    public RequestResponseHelper(String[] args){
+        this.args = args;
+    }
 
     public void sendErrorResponse(OutputStream outputStream, int statusCode, String statusText) throws IOException {
         String response = "HTTP/1.1 " + statusCode + " " + statusText + "\r\n" +
@@ -31,6 +39,13 @@ public class RequestResponseHelper {
     public void sendResponse(OutputStream outputStream, String response) throws IOException {
         outputStream.write(response.getBytes());
         outputStream.flush();
+    }
+
+    public String getDirectory() {
+        String directory = EMPTY;
+        if (this.args.length == 2 && ARGS_DIRECTORY.equals(this.args[0]))
+            directory = args[1];
+        return directory;
     }
 
 

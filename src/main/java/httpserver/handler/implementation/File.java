@@ -20,9 +20,10 @@ public class File implements RequestHandler {
     private final String directory;
     private final RequestResponseHelper requestResponseHelper;
 
-    public File(RequestResponseHelper requestResponseHelper, String directory) {
-        this.directory = directory != null ? directory : EMPTY;
+    public File(RequestResponseHelper requestResponseHelper) {
         this.requestResponseHelper = requestResponseHelper;
+        String dir = requestResponseHelper.getDirectory();
+        this.directory = dir != null ? dir : EMPTY;
     }
 
     @Override
