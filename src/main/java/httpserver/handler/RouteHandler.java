@@ -1,6 +1,5 @@
 package httpserver.handler;
 
-import httpserver.enums.HttpMethod;
 import httpserver.handler.factory.FileHandlerStrategyFactory;
 import httpserver.handler.implementation.*;
 import httpserver.helper.RequestResponseHelper;
