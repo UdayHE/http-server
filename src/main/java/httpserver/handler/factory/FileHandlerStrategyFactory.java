@@ -2,11 +2,14 @@ package httpserver.handler.factory;
 
 import httpserver.enums.HttpMethod;
 import httpserver.handler.FileHandlerStrategy;
-import httpserver.handler.implementation.strategy.GetFileHandler;
-import httpserver.handler.implementation.strategy.PostFileHandler;
+import httpserver.handler.implementation.strategy.Get;
+import httpserver.handler.implementation.strategy.Post;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static httpserver.enums.HttpMethod.GET;
+import static httpserver.enums.HttpMethod.POST;
 
 public class FileHandlerStrategyFactory {
 
@@ -15,8 +18,8 @@ public class FileHandlerStrategyFactory {
     private static final Map<HttpMethod, FileHandlerStrategy> strategies = new HashMap<>();
 
     static {
-        strategies.put(HttpMethod.GET, new GetFileHandler());
-        strategies.put(HttpMethod.POST, new PostFileHandler());
+        strategies.put(GET, new Get());
+        strategies.put(POST, new Post());
     }
 
     public static FileHandlerStrategy getStrategy(HttpMethod method) {

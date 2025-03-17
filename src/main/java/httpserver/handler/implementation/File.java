@@ -147,11 +147,10 @@ public class File implements RequestHandler {
         java.io.File file = new java.io.File(directory, filename);
 
         FileHandlerStrategy strategy = FileHandlerStrategyFactory.getStrategy(HttpMethod.valueOf(method));
-        if (strategy != null) {
+        if (strategy != null)
             strategy.handle(request, file);
-        } else {
+        else
             sendResponse(outputStream, METHOD_NOT_ALLOWED);
-        }
     }
 
     private void sendResponse(OutputStream outputStream, String response) throws IOException {
