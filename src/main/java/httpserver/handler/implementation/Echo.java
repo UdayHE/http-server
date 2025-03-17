@@ -7,7 +7,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
@@ -15,38 +14,6 @@ import static httpserver.constant.Constant.*;
 
 public class Echo implements RequestHandler {
 
-//    @Override
-//    public void handle(Request request) throws IOException {
-//        String path = request.getPath();
-//        OutputStream outputStream = request.getOutputStream();
-//        Map<String, String> headers = request.getHeaders();
-//
-//        String message = path.substring(6);
-//
-//        String acceptEncoding = headers.getOrDefault(ACCEPT_ENCODING, EMPTY);
-//        boolean useGzip = Arrays.stream(acceptEncoding.split(COMMA))
-//                .map(String::trim)
-//                .anyMatch(GZIP::equalsIgnoreCase);
-//
-//        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-//        OutputStream responseStream = useGzip ? new GZIPOutputStream(byteStream) : byteStream;
-//        responseStream.write(message.getBytes(StandardCharsets.UTF_8));
-//        responseStream.close();
-//
-//        byte[] responseBody = byteStream.toByteArray();
-//
-//        String responseHeaders = getResponseHeaders(useGzip, responseBody);
-//        outputStream.write(responseHeaders.getBytes(StandardCharsets.UTF_8));
-//        outputStream.write(responseBody);
-//        outputStream.flush();
-//    }
-//
-//    private String getResponseHeaders(boolean useGzip, byte[] responseBody) {
-//        return  "HTTP/1.1 200 OK\r\n" +
-//                "Content-Type: text/plain\r\n" +
-//                (useGzip ? "Content-Encoding: gzip\r\n" : "") +
-//                "Content-Length: " + responseBody.length + "\r\n\r\n";
-//    }
 
     @Override
     public void handle(Request request) throws IOException {
@@ -61,16 +28,15 @@ public class Echo implements RequestHandler {
 
             sendResponse(outputStream, responseBody, useGzip);
         } catch (IllegalArgumentException e) {
-            sendErrorResponse(outputStream, 400, "Bad Request");
+            sendErrorResponse(outputStream, 400, BAD_REQUEST_STR);
         } catch (Exception e) {
-            sendErrorResponse(outputStream, 500, "Internal Server Error");
+            sendErrorResponse(outputStream, 500, INTERNAL_SERVER_STR);
         }
     }
 
     private void validatePath(String path) {
-        if (path.length() <= 6) {
-            throw new IllegalArgumentException("Invalid path");
-        }
+        if (path.length() <= 6)
+            throw new IllegalArgumentException(INVALID_PATH);
     }
 
     private boolean isGzipAccepted(Map<String, String> headers) {

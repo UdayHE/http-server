@@ -12,8 +12,10 @@ public class Constant {
     public static final String CONTENT_LENGTH = "Content-Length";
     public static final String ACCEPT_ENCODING = "Accept-Encoding";
     public static final String GZIP = "gzip";
-    public static final String COMMA = ", ";
     public static final String UNKNOWN = "Unknown";
+    public static final String BAD_REQUEST_STR = "Bad Request";
+    public static final String INTERNAL_SERVER_STR = "Internal Server Error";
+    public static final String INVALID_PATH = "Invalid path";
 
     public static final String BAD_REQUEST = "HTTP/1.1 400 Bad Request\r\n\r\n";
     public static final String METHOD_NOT_ALLOWED = "HTTP/1.1 405 Method Not Allowed\r\n\r\n";
