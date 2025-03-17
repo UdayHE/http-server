@@ -21,6 +21,13 @@ public class RequestResponseHelper {
                 "Content-Length: " + responseBody.length + "\r\n\r\n";
     }
 
+    public String okResponse(String userAgent) {
+        return "HTTP/1.1 200 OK\r\n" +
+                "Content-Type: text/plain\r\n" +
+                "Content-Length: " + userAgent.length() + "\r\n\r\n" +
+                userAgent;
+    }
+
     public void sendResponse(OutputStream outputStream, String response) throws IOException {
         outputStream.write(response.getBytes());
         outputStream.flush();

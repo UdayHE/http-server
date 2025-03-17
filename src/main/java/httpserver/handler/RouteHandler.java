@@ -22,7 +22,7 @@ public class RouteHandler {
         handlers.put(ROOT.getValue(), new Root(requestResponseHelper));
         handlers.put(ECHO.getValue(), new Echo(requestResponseHelper));
         handlers.put(USER_AGENT.getValue(), new UserAgent(requestResponseHelper));
-        handlers.put(FILE.getValue(), new File(getDirectory(args)));
+        handlers.put(FILE.getValue(), new File(requestResponseHelper, getDirectory(args)));
         notFoundHandler = new NotFound(requestResponseHelper);
     }
 

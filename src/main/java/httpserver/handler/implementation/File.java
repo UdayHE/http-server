@@ -5,6 +5,7 @@ import httpserver.enums.HttpMethod;
 import httpserver.handler.FileHandlerStrategy;
 import httpserver.handler.RequestHandler;
 import httpserver.handler.factory.FileHandlerStrategyFactory;
+import httpserver.helper.RequestResponseHelper;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -17,9 +18,11 @@ import static httpserver.enums.Handler.FILE;
 public class File implements RequestHandler {
 
     private final String directory;
+    private final RequestResponseHelper requestResponseHelper;
 
-    public File(String directory) {
+    public File(RequestResponseHelper requestResponseHelper, String directory) {
         this.directory = directory != null ? directory : EMPTY;
+        this.requestResponseHelper = requestResponseHelper;
     }
 
     @Override
@@ -37,19 +40,14 @@ public class File implements RequestHandler {
         if (strategy != null)
             strategy.handle(request, file);
         else
-            sendResponse(outputStream, METHOD_NOT_ALLOWED);
+            requestResponseHelper.sendResponse(outputStream, METHOD_NOT_ALLOWED);
     }
 
     private boolean isBadRequest(String path, OutputStream outputStream) throws IOException {
         if (!path.startsWith(FILE.getValue()) || path.length() <= 7) {
-            sendResponse(outputStream, BAD_REQUEST);
+            requestResponseHelper.sendResponse(outputStream, BAD_REQUEST);
             return true;
         }
         return false;
-    }
-
-    private void sendResponse(OutputStream outputStream, String response) throws IOException {
-        outputStream.write(response.getBytes());
-        outputStream.flush();
     }
 }

@@ -23,21 +23,9 @@ public class UserAgent implements RequestHandler {
     public void handle(Request request) throws IOException {
         OutputStream outputStream = request.getOutputStream();
         Map<String, String> headers = request.getHeaders();
-
         String userAgent = headers.getOrDefault(USER_AGENT, UNKNOWN);
-
-        String response = getResponse(userAgent);
-
-        requestResponseHelper.sendResponse(outputStream, response);
-//        outputStream.write(response.getBytes(StandardCharsets.UTF_8));
-//        outputStream.flush();
+        requestResponseHelper.sendResponse(outputStream, requestResponseHelper.okResponse(userAgent));
     }
 
-    private  String getResponse(String userAgent) {
-        return "HTTP/1.1 200 OK\r\n" +
-                "Content-Type: text/plain\r\n" +
-                "Content-Length: " + userAgent.length() + "\r\n\r\n" +
-                userAgent;
-    }
 
 }
