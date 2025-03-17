@@ -38,10 +38,9 @@ public class Get implements FileHandlerStrategy {
     }
 
     private String getResponse(byte[] fileContent) {
-        String response = "HTTP/1.1 200 OK\r\n" +
+        return "HTTP/1.1 200 OK\r\n" +
                 "Content-Type: application/octet-stream\r\n" +
                 "Content-Length: " + fileContent.length + "\r\n\r\n";
-        return response;
     }
 
     private void sendResponse(OutputStream outputStream, String response) throws IOException {

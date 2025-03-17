@@ -1,6 +1,7 @@
 package httpserver.handler;
 
 import httpserver.handler.implementation.*;
+import httpserver.helper.RequestResponseHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,13 +15,15 @@ public class RouteHandler {
     private final Map<String, RequestHandler> handlers;
     private final RequestHandler notFoundHandler;
 
+
     public RouteHandler(String[] args) {
         handlers = new HashMap<>();
-        handlers.put(ROOT.getValue(), new Root());
-        handlers.put(ECHO.getValue(), new Echo());
-        handlers.put(USER_AGENT.getValue(), new UserAgent());
+        RequestResponseHelper requestResponseHelper = new RequestResponseHelper();
+        handlers.put(ROOT.getValue(), new Root(requestResponseHelper));
+        handlers.put(ECHO.getValue(), new Echo(requestResponseHelper));
+        handlers.put(USER_AGENT.getValue(), new UserAgent(requestResponseHelper));
         handlers.put(FILE.getValue(), new File(getDirectory(args)));
-        notFoundHandler = new NotFound();
+        notFoundHandler = new NotFound(requestResponseHelper);
     }
 
     public RequestHandler get(String path) {

@@ -2,17 +2,24 @@ package httpserver.handler.implementation;
 
 import httpserver.dto.Request;
 import httpserver.handler.RequestHandler;
+import httpserver.helper.RequestResponseHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
 import static httpserver.constant.Constant.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class Echo implements RequestHandler {
+
+    private final RequestResponseHelper requestResponseHelper;
+
+    public Echo(RequestResponseHelper requestResponseHelper) {
+        this.requestResponseHelper = requestResponseHelper;
+    }
 
 
     @Override
@@ -28,9 +35,9 @@ public class Echo implements RequestHandler {
 
             sendResponse(outputStream, responseBody, useGzip);
         } catch (IllegalArgumentException e) {
-            sendErrorResponse(outputStream, 400, BAD_REQUEST_STR);
+            requestResponseHelper.sendErrorResponse(outputStream, 400, BAD_REQUEST_STR);
         } catch (Exception e) {
-            sendErrorResponse(outputStream, 500, INTERNAL_SERVER_STR);
+            requestResponseHelper.sendErrorResponse(outputStream, 500, INTERNAL_SERVER_STR);
         }
     }
 
@@ -49,32 +56,20 @@ public class Echo implements RequestHandler {
 
         if (useGzip) {
             try (GZIPOutputStream gzipStream = new GZIPOutputStream(byteStream)) {
-                gzipStream.write(message.getBytes(StandardCharsets.UTF_8));
+                gzipStream.write(message.getBytes(UTF_8));
             }
-        } else {
-            byteStream.write(message.getBytes(StandardCharsets.UTF_8));
-        }
+        } else
+            byteStream.write(message.getBytes(UTF_8));
         return byteStream.toByteArray();
     }
 
     private void sendResponse(OutputStream outputStream, byte[] responseBody, boolean useGzip) throws IOException {
-        String responseHeaders = buildHeaders(useGzip, responseBody);
-        outputStream.write(responseHeaders.getBytes(StandardCharsets.UTF_8));
+        String responseHeaders = requestResponseHelper.buildHeaders(useGzip, responseBody);
+        outputStream.write(responseHeaders.getBytes(UTF_8));
         outputStream.write(responseBody);
         outputStream.flush();
     }
 
-    private String buildHeaders(boolean useGzip, byte[] responseBody) {
-        return "HTTP/1.1 200 OK\r\n" +
-                "Content-Type: text/plain\r\n" +
-                (useGzip ? "Content-Encoding: gzip\r\n" : "") +
-                "Content-Length: " + responseBody.length + "\r\n\r\n";
-    }
 
-    private void sendErrorResponse(OutputStream outputStream, int statusCode, String statusText) throws IOException {
-        String response = "HTTP/1.1 " + statusCode + " " + statusText + "\r\n" +
-                "Content-Length: 0\r\n\r\n";
-        outputStream.write(response.getBytes(StandardCharsets.UTF_8));
-        outputStream.flush();
-    }
+
 }
