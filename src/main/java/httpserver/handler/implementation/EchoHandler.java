@@ -13,11 +13,11 @@ import java.util.zip.GZIPOutputStream;
 import static httpserver.constant.Constant.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class Echo implements RequestHandler {
+public class EchoHandler implements RequestHandler {
 
     private final RequestResponseHelper requestResponseHelper;
 
-    public Echo(RequestResponseHelper requestResponseHelper) {
+    public EchoHandler(RequestResponseHelper requestResponseHelper) {
         this.requestResponseHelper = requestResponseHelper;
     }
 

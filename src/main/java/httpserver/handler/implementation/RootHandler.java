@@ -8,11 +8,11 @@ import java.io.IOException;
 
 import static httpserver.constant.Constant.OK;
 
-public class Root implements RequestHandler {
+public class RootHandler implements RequestHandler {
 
     private final RequestResponseHelper requestResponseHelper;
 
-    public Root(RequestResponseHelper requestResponseHelper) {
+    public RootHandler(RequestResponseHelper requestResponseHelper) {
         this.requestResponseHelper = requestResponseHelper;
     }
 

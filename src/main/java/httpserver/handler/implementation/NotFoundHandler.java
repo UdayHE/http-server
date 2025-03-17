@@ -8,11 +8,11 @@ import java.io.IOException;
 
 import static httpserver.constant.Constant.NOT_FOUND;
 
-public class NotFound implements RequestHandler {
+public class NotFoundHandler implements RequestHandler {
 
     private final RequestResponseHelper requestResponseHelper;
 
-    public NotFound(RequestResponseHelper requestResponseHelper) {
+    public NotFoundHandler(RequestResponseHelper requestResponseHelper) {
         this.requestResponseHelper = requestResponseHelper;
     }
 

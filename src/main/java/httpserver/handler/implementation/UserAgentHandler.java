@@ -11,11 +11,11 @@ import java.util.Map;
 import static httpserver.constant.Constant.UNKNOWN;
 import static httpserver.constant.Constant.USER_AGENT;
 
-public class UserAgent implements RequestHandler {
+public class UserAgentHandler implements RequestHandler {
 
     private final RequestResponseHelper requestResponseHelper;
 
-    public UserAgent(RequestResponseHelper requestResponseHelper) {
+    public UserAgentHandler(RequestResponseHelper requestResponseHelper) {
         this.requestResponseHelper = requestResponseHelper;
     }
 

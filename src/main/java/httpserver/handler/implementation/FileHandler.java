@@ -15,14 +15,14 @@ import java.nio.charset.StandardCharsets;
 import static httpserver.constant.Constant.*;
 import static httpserver.enums.Handler.FILE;
 
-public class File implements RequestHandler {
+public class FileHandler implements RequestHandler {
 
     private final String directory;
     private final RequestResponseHelper requestResponseHelper;
     private final FileHandlerStrategyFactory fileHandlerStrategyFactory;
 
-    public File(RequestResponseHelper requestResponseHelper,
-                FileHandlerStrategyFactory fileHandlerStrategyFactory) {
+    public FileHandler(RequestResponseHelper requestResponseHelper,
+                       FileHandlerStrategyFactory fileHandlerStrategyFactory) {
         this.requestResponseHelper = requestResponseHelper;
         this.fileHandlerStrategyFactory = fileHandlerStrategyFactory;
         String dir = requestResponseHelper.getDirectory();
