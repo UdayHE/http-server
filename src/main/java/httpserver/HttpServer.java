@@ -30,10 +30,9 @@ public class HttpServer {
 
     public void start(String[] args) {
         log.info("HTTP Server Started.");
-        try {
-            ServerSocket serverSocket = new ServerSocket(PORT);
+        try (ServerSocket serverSocket = new ServerSocket(PORT);
+             ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE)) {
             serverSocket.setReuseAddress(true);
-            ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
             RouteHandler routeHandler = new RouteHandler(args);
             while (true) {
                 Socket clientSocket = serverSocket.accept();
