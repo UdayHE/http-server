@@ -14,11 +14,9 @@ import static httpserver.enums.HttpMethod.POST;
 
 public class FileHandlerStrategyFactory {
 
-    private final RequestResponseHelper requestResponseHelper;
     private final Map<HttpMethod, FileHandlerStrategy> strategies = new HashMap<>();
 
     public FileHandlerStrategyFactory(RequestResponseHelper requestResponseHelper) {
-        this.requestResponseHelper = requestResponseHelper;
         strategies.put(GET, new Get(requestResponseHelper));
         strategies.put(POST, new Post(requestResponseHelper));
     }
