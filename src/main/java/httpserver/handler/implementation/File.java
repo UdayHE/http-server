@@ -19,9 +19,12 @@ public class File implements RequestHandler {
 
     private final String directory;
     private final RequestResponseHelper requestResponseHelper;
+    private final FileHandlerStrategyFactory fileHandlerStrategyFactory;
 
-    public File(RequestResponseHelper requestResponseHelper) {
+    public File(RequestResponseHelper requestResponseHelper,
+                FileHandlerStrategyFactory fileHandlerStrategyFactory) {
         this.requestResponseHelper = requestResponseHelper;
+        this.fileHandlerStrategyFactory = fileHandlerStrategyFactory;
         String dir = requestResponseHelper.getDirectory();
         this.directory = dir != null ? dir : EMPTY;
     }
@@ -37,7 +40,8 @@ public class File implements RequestHandler {
         String filename = path.substring(7);
         filename = URLDecoder.decode(filename, StandardCharsets.UTF_8);
         java.io.File file = new java.io.File(directory, filename);
-        FileHandlerStrategy strategy = FileHandlerStrategyFactory.getStrategy(HttpMethod.valueOf(method));
+
+        FileHandlerStrategy strategy = fileHandlerStrategyFactory.getStrategy(HttpMethod.valueOf(method));
         if (strategy != null)
             strategy.handle(request, file);
         else

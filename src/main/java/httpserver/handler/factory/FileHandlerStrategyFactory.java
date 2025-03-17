@@ -24,11 +24,6 @@ public class FileHandlerStrategyFactory {
     }
 
 
-
-    static {
-
-    }
-
     public FileHandlerStrategy getStrategy(HttpMethod method) {
         return this.strategies.get(method);
     }
