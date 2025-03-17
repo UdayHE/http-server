@@ -32,7 +32,7 @@ public class Get implements FileHandlerStrategy {
 
         try {
             byte[] fileContent = Files.readAllBytes(file.toPath());
-            String response = requestResponseHelper.octateStreamOKResponse(fileContent);
+            String response = requestResponseHelper.octetStreamOKResponse(fileContent);
             outputStream.write(response.getBytes());
             outputStream.write(fileContent, 0, fileContent.length);
             outputStream.flush();

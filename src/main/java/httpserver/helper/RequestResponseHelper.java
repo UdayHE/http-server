@@ -36,7 +36,7 @@ public class RequestResponseHelper {
                 userAgent;
     }
 
-    public String octateStreamOKResponse(byte[] fileContent) {
+    public String octetStreamOKResponse(byte[] fileContent) {
         return "HTTP/1.1 200 OK\r\n" +
                 "Content-Type: application/octet-stream\r\n" +
                 "Content-Length: " + fileContent.length + "\r\n\r\n";
